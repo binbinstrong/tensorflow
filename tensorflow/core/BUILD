@@ -149,6 +149,7 @@ load(
     "//third_party/mkl:build_defs.bzl",
     "if_mkl",
 )
+load("@io_bazel_rules_closure//closure:defs.bzl", "closure_proto_library")
 
 exports_files(["ops/ops.pbtxt"])
 
@@ -159,6 +160,7 @@ exports_files(["ops/ops.pbtxt"])
 #
 # Note that some protos are in neither additional_core_proto_srcs nor this
 # filegroup; e.g.  ones with individual proto_library targets.
+# LINT.IfChange
 CORE_PROTO_SRCS = [
     "example/example.proto",
     "example/feature.proto",
@@ -200,6 +202,7 @@ CORE_PROTO_SRCS = [
     "util/memmapped_file_system.proto",
     "util/saved_tensor_slice.proto",
 ]
+# LINT.ThenChange(//tensorflow/core/android_proto_config.asciipb)
 
 # Protos which are not needed on mobile builds, but should be included in
 # protos_all.
@@ -243,6 +246,21 @@ tf_nano_proto_library(
     generate_intdefs = 1,
     visibility = ["//visibility:public"],
     deps = [":protos_all_cc"],
+)
+
+proto_library(
+    name = "example_protos",
+    srcs = [
+        "example/example.proto",
+        "example/feature.proto",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+closure_proto_library(
+    name = "example_protos_closure",
+    visibility = ["//visibility:public"],
+    deps = [":example_protos"],
 )
 
 exports_files([
